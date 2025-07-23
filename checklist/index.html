@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Store Automation - Implementation Checklist</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--surface);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .header p {
+            text-align: center;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Progress Overview */
+        .progress-overview {
+            background: var(--background);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background: var(--surface);
+            border: 2px solid var(--border-color);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .overall-progress {
+            margin-top: 1.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background-color: var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* Phase Sections */
+        .phase-section {
+            background: var(--background);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .phase-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .phase-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .phase-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .phase-content {
+            padding: 0;
+        }
+
+        .phase-info {
+            padding: 1.5rem 2rem;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .phase-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .meta-icon {
+            width: 16px;
+            height: 16px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+        }
+
+        /* Checklist Items */
+        .checklist-group {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist-group:last-child {
+            border-bottom: none;
+        }
+
+        .group-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: var(--surface);
+        }
+
+        .checklist-item:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .checklist-item.completed {
+            background: #f0fdf4;
+            border-color: var(--success-color);
+        }
+
+        .checklist-item.high-priority {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .checklist-item.medium-priority {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .checklist-item.low-priority {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox.checked {
+            background: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .item-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .item-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .meta-badge {
+            background: var(--border-color);
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .cost-badge {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .time-badge {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .priority-badge {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .priority-badge.medium {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+
+        .priority-badge.low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 0.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .progress-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .phase-header {
+                padding: 1rem 1.5rem;
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+
+            .checklist-group {
+                padding: 1rem 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .action-buttons,
+            .progress-overview {
+                display: none;
+            }
+            
+            .phase-section {
+                break-inside: avoid;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>🚀 Computer Store Automation Checklist</h1>
+            <p>Your step-by-step guide to digital transformation success</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Progress Overview -->
+        <div class="progress-overview">
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="completed-tasks">0</span>
+                    <div class="stat-label">Tasks Completed</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="total-tasks">36</span>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="current-phase">1</span>
+                    <div class="stat-label">Current Phase</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="estimated-cost">₹4.5L</span>
+                    <div class="stat-label">Est. Investment</div>
+                </div>
+            </div>
+            
+            <div class="overall-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="overall-progress"></div>
+                </div>
+                <div class="progress-text" id="progress-text">0% Complete - Ready to begin your automation journey!</div>
+            </div>
+        </div>
+
+        <!-- Phase 1: Foundation Setup -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-title">🏗️ Phase 1: Foundation Setup</div>
+                <div class="phase-badge">Months 1-3</div>
+            </div>
+            
+            <div class="phase-info">
+                <div class="phase-meta">
+                    <div class="meta-item">
+                        <div class="meta-icon">💰</div>
+                        <span>₹1.4L - ₹2.25L Investment</span>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">⏱️</div>
+                        <span>3 Months Duration</span>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">🎯</div>
+                        <span>Online Presence + Basic Automation</span>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">📈</div>
+                        <span>50% Error Reduction Expected</span>
+                    </div>
+                </div>
+                <p><strong>Objective:</strong> Establish your online presence and automate basic operations without disrupting your existing business.</p>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">🌐 Website Development</div>
+                
+                <div class="checklist-item high-priority" data-task="website-partner">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Partner with Local IT Firm</div>
+                        <div class="item-description">Contact and engage Devseccops or similar Kurukshetra-based IT firm for website development</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹500-₹1,000/hour rates</span>
+                            <span class="meta-badge time-badge">Week 1</span>
+                            <span class="meta-badge priority-badge">High Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item high-priority" data-task="woocommerce-setup">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Create WooCommerce Store</div>
+                        <div class="item-description">Set up WooCommerce store showcasing 200-300 key products with mobile optimization</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹50,000-₹75,000</span>
+                            <span class="meta-badge time-badge">Week 2-3</span>
+                            <span class="meta-badge priority-badge">High Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="payment-integration">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Integrate Payment Gateway</div>
+                        <div class="item-description">Set up Razorpay for UPI, cards, net banking with GST compliance</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹10,000-₹15,000</span>
+                            <span class="meta-badge time-badge">Week 3</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="product-photography">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Professional Product Photography</div>
+                        <div class="item-description">Take professional photos of store and key products, create SEO-optimized descriptions</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹15,000-₹25,000</span>
+                            <span class="meta-badge time-badge">Week 2-4</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">📦 Inventory Management</div>
+                
+                <div class="checklist-item high-priority" data-task="zoho-inventory">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Implement Zoho Inventory</div>
+                        <div class="item-description">Set up Zoho Inventory Free tier, digitize current stock records</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Free initially</span>
+                            <span class="meta-badge time-badge">Week 2</span>
+                            <span class="meta-badge priority-badge">High Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="stock-alerts">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Configure Stock Alerts</div>
+                        <div class="item-description">Set up automatic low-stock alerts for popular items and categories</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Part of setup</span>
+                            <span class="meta-badge time-badge">Week 3</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="product-categories">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Create Product Categories</div>
+                        <div class="item-description">Organize inventory: Laptops, CCTV, Biometrics, Accessories with proper categorization</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Part of setup</span>
+                            <span class="meta-badge time-badge">Week 2-3</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">💼 Accounting Integration</div>
+                
+                <div class="checklist-item high-priority" data-task="tally-setup">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Configure Tally for GST</div>
+                        <div class="item-description">Upgrade or configure Tally for GST compliance and automated invoicing</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹1,000/month</span>
+                            <span class="meta-badge time-badge">Week 2</span>
+                            <span class="meta-badge priority-badge">High Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="sales-integration">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Connect Sales to Accounting</div>
+                        <div class="item-description">Link sales data automatically to accounting system for seamless financial reporting</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹5,000-₹10,000</span>
+                            <span class="meta-badge time-badge">Week 3</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">🤖 Customer Support Automation</div>
+                
+                <div class="checklist-item medium-priority" data-task="chatbot-setup">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Deploy Zoho SalesIQ Chatbot</div>
+                        <div class="item-description">Set up chatbot for common queries: store hours, product availability, repair services</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹1,000/month</span>
+                            <span class="meta-badge time-badge">Week 4</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item low-priority" data-task="whatsapp-business">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Set Up WhatsApp Business</div>
+                        <div class="item-description">Configure WhatsApp Business for direct customer communication and support</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Free</span>
+                            <span class="meta-badge time-badge">Week 3-4</span>
+                            <span class="meta-badge priority-badge low">Low Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item low-priority" data-task="faq-section">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Create FAQ Section</div>
+                        <div class="item-description">Develop comprehensive FAQ addressing common customer questions and concerns</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Part of website</span>
+                            <span class="meta-badge time-badge">Week 4</span>
+                            <span class="meta-badge priority-badge low">Low Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 2: Process Optimization -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-title">⚡ Phase 2: Process Optimization</div>
+                <div class="phase-badge">Months 4-9</div>
+            </div>
+            
+            <div class="phase-info">
+                <div class="phase-meta">
+                    <div class="meta-item">
+                        <div class="meta-icon">💰</div>
+                        <span>₹75K - ₹1.25L Investment</span>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">⏱️</div>
+                        <span>6 Months Duration</span>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">🎯</div>
+                        <span>Integrate In-store + Online</span>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">📈</div>
+                        <span>100-150 Orders/Month Capacity</span>
+                    </div>
+                </div>
+                <p><strong>Objective:</strong> Integrate your in-store and online operations, build customer database, and increase order capacity.</p>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">🏪 POS System Integration</div>
+                
+                <div class="checklist-item high-priority" data-task="square-pos">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Install Square POS System</div>
+                        <div class="item-description">Set up Square POS at Red Road location, sync with online inventory automatically</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹30,000-₹40,000</span>
+                            <span class="meta-badge time-badge">Month 4</span>
+                            <span class="meta-badge priority-badge">High Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="barcode-scanners">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Add Barcode Scanners</div>
+                        <div class="item-description">Install barcode scanners for faster checkout and inventory tracking</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹10,000-₹15,000</span>
+                            <span class="meta-badge time-badge">Month 4</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="staff-pos-training">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Train Staff on POS System</div>
+                        <div class="item-description">Comprehensive training for all staff on new POS system operations</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹10,000 training</span>
+                            <span class="meta-badge time-badge">Month 4-5</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">👥 Customer Relationship Management</div>
+                
+                <div class="checklist-item high-priority" data-task="zoho-crm">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Implement Zoho CRM</div>
+                        <div class="item-description">Set up Zoho CRM Free to track customer preferences and purchase history</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Free tier</span>
+                            <span class="meta-badge time-badge">Month 5</span>
+                            <span class="meta-badge priority-badge">High Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="customer-segmentation">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Segment Customers</div>
+                        <div class="item-description">Create segments: NIT students, local businesses, coaching centers for targeted marketing</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Part of CRM</span>
+                            <span class="meta-badge time-badge">Month 5</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="email-campaigns">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Set Up Email Campaigns</div>
+                        <div class="item-description">Create automated email campaigns: birthday discounts, new product alerts, cart abandonment</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹5,000-₹10,000</span>
+                            <span class="meta-badge time-badge">Month 6</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item low-priority" data-task="loyalty-program">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Create Loyalty Program</div>
+                        <div class="item-description">Develop loyalty program for repeat customers with point-based rewards</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹10,000-₹15,000</span>
+                            <span class="meta-badge time-badge">Month 7</span>
+                            <span class="meta-badge priority-badge low">Low Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">📊 Analytics and Insights</div>
+                
+                <div class="checklist-item high-priority" data-task="google-analytics">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Configure Google Analytics</div>
+                        <div class="item-description">Set up Google Analytics for website performance tracking and customer behavior analysis</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Free</span>
+                            <span class="meta-badge time-badge">Month 5</span>
+                            <span class="meta-badge priority-badge">High Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="product-monitoring">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Monitor Popular Products</div>
+                        <div class="item-description">Track gaming accessories, student laptops, and other high-demand items for inventory planning</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Part of analytics</span>
+                            <span class="meta-badge time-badge">Month 6</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="customer-journey">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Track Customer Journey</div>
+                        <div class="item-description">Monitor customer path from awareness to purchase for optimization opportunities</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Part of analytics</span>
+                            <span class="meta-badge time-badge">Month 7</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">📱 Marketing Automation</div>
+                
+                <div class="checklist-item medium-priority" data-task="social-media">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Set Up Social Media Presence</div>
+                        <div class="item-description">Create Instagram and Facebook profiles for Computer Shopee with regular posting schedule</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹5,000-₹10,000</span>
+                            <span class="meta-badge time-badge">Month 6</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="content-calendar">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Develop Content Calendar</div>
+                        <div class="item-description">Create content calendar for tech tips, product highlights, and customer testimonials</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹5,000-₹10,000</span>
+                            <span class="meta-badge time-badge">Month 7</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item low-priority" data-task="student-promotions">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Target NIT Students</div>
+                        <div class="item-description">Create semester-based promotions and special pricing for NIT Kurukshetra students</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹5,000-₹15,000</span>
+                            <span class="meta-badge time-badge">Month 8</span>
+                            <span class="meta-badge priority-badge low">Low Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 3: Market Leadership -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-title">🏆 Phase 3: Market Leadership</div>
+                <div class="phase-badge">Months 10-18</div>
+            </div>
+            
+            <div class="phase-info">
+                <div class="phase-meta">
+                    <div class="meta-item">
+                        <div class="meta-icon">💰</div>
+                        <span>₹90K - ₹1.55L Investment</span>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">⏱️</div>
+                        <span>9 Months Duration</span>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">🎯</div>
+                        <span>Regional Market Leadership</span>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">📈</div>
+                        <span>25% Online Sales Growth</span>
+                    </div>
+                </div>
+                <p><strong>Objective:</strong> Establish Computer Shopee as Kurukshetra's leading tech retailer and explore regional expansion.</p>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">🚚 Logistics and Delivery</div>
+                
+                <div class="checklist-item high-priority" data-task="delhivery-partnership">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Partner with Delhivery</div>
+                        <div class="item-description">Set up partnership with Delhivery for automated shipping and delivery services</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹15,000-₹25,000</span>
+                            <span class="meta-badge time-badge">Month 10</span>
+                            <span class="meta-badge priority-badge">High Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="same-day-delivery">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Implement Same-Day Delivery</div>
+                        <div class="item-description">Offer same-day delivery within Kurukshetra city limits for competitive advantage</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹10,000-₹15,000</span>
+                            <span class="meta-badge time-badge">Month 11</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="order-tracking">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Real-time Order Tracking</div>
+                        <div class="item-description">Implement real-time order tracking system for customer transparency</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Part of delivery setup</span>
+                            <span class="meta-badge time-badge">Month 11</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item low-priority" data-task="regional-delivery">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Expand to Nearby Cities</div>
+                        <div class="item-description">Expand delivery services to Thanesar, Pehowa, and Karnal for regional reach</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹5,000-₹10,000</span>
+                            <span class="meta-badge time-badge">Month 12</span>
+                            <span class="meta-badge priority-badge low">Low Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">🎯 Advanced Customer Experience</div>
+                
+                <div class="checklist-item medium-priority" data-task="chatbot-upgrade">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Upgrade Chatbot Capabilities</div>
+                        <div class="item-description">Upgrade to Zoho SalesIQ paid plan for advanced chatbot features and appointment scheduling</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹2,000/month</span>
+                            <span class="meta-badge time-badge">Month 11</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="repair-scheduling">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Add Repair Service Scheduling</div>
+                        <div class="item-description">Implement online appointment booking system for repair services</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹10,000-₹15,000</span>
+                            <span class="meta-badge time-badge">Month 12</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item low-priority" data-task="feedback-loops">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Customer Feedback System</div>
+                        <div class="item-description">Implement automated customer feedback collection and response system</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹5,000-₹10,000</span>
+                            <span class="meta-badge time-badge">Month 13</span>
+                            <span class="meta-badge priority-badge low">Low Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item low-priority" data-task="vip-program">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Create VIP Customer Program</div>
+                        <div class="item-description">Develop VIP program for high-value customers with exclusive benefits</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹10,000-₹20,000</span>
+                            <span class="meta-badge time-badge">Month 14</span>
+                            <span class="meta-badge priority-badge low">Low Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">🔗 Supplier Integration</div>
+                
+                <div class="checklist-item high-priority" data-task="supplier-apis">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Develop Supplier APIs</div>
+                        <div class="item-description">Create APIs to connect with suppliers like Redington India for automated ordering</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹30,000-₹40,000</span>
+                            <span class="meta-badge time-badge">Month 13-14</span>
+                            <span class="meta-badge priority-badge">High Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item medium-priority" data-task="auto-reordering">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Automate Reordering</div>
+                        <div class="item-description">Set up automated reordering for fast-moving items based on stock levels</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">Part of API setup</span>
+                            <span class="meta-badge time-badge">Month 15</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item low-priority" data-task="dropshipping">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Implement Drop-shipping</div>
+                        <div class="item-description">Set up drop-shipping arrangements for specialized or low-volume items</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹15,000-₹25,000</span>
+                            <span class="meta-badge time-badge">Month 16</span>
+                            <span class="meta-badge priority-badge low">Low Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-group">
+                <div class="group-title">🌐 Market Expansion</div>
+                
+                <div class="checklist-item medium-priority" data-task="amazon-flipkart">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">List on Amazon & Flipkart</div>
+                        <div class="item-description">Create seller accounts and list products on Amazon India and Flipkart marketplaces</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹10,000-₹15,000</span>
+                            <span class="meta-badge time-badge">Month 15</span>
+                            <span class="meta-badge priority-badge medium">Medium Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item low-priority" data-task="b2b-processes">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Develop B2B Sales Process</div>
+                        <div class="item-description">Create specialized processes for bulk orders from businesses and institutions</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹5,000-₹10,000</span>
+                            <span class="meta-badge time-badge">Month 16</span>
+                            <span class="meta-badge priority-badge low">Low Priority</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item low-priority" data-task="edu-partnerships">
+                    <div class="checkbox"></div>
+                    <div class="item-content">
+                        <div class="item-title">Educational Institution Partnerships</div>
+                        <div class="item-description">Explore partnerships with NIT Kurukshetra and other educational institutions</div>
+                        <div class="item-meta">
+                            <span class="meta-badge cost-badge">₹10,000-₹20,000</span>
+                            <span class="meta-badge time-badge">Month 17</span>
+                            <span class="meta-badge priority-badge low">Low Priority</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="exportChecklist()">📄 Export Checklist</button>
+            <button class="btn btn-success" onclick="resetProgress()">🔄 Reset Progress</button>
+            <button class="btn btn-outline" onclick="printChecklist()">🖨️ Print Checklist</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize checklist functionality
+        let completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+
+        // Initialize the checklist
+        function initializeChecklist() {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const items = document.querySelectorAll('.checklist-item');
+            
+            // Set initial states
+            items.forEach((item, index) => {
+                const taskId = item.getAttribute('data-task');
+                if (completedTasks.includes(taskId)) {
+                    item.classList.add('completed');
+                    item.querySelector('.checkbox').classList.add('checked');
+                    item.querySelector('.checkbox').innerHTML = '✓';
+                }
+            });
+
+            // Add click handlers
+            items.forEach(item => {
+                item.addEventListener('click', () => toggleTask(item));
+            });
+
+            updateProgress();
+        }
+
+        // Toggle task completion
+        function toggleTask(item) {
+            const checkbox = item.querySelector('.checkbox');
+            const taskId = item.getAttribute('data-task');
+            
+            if (item.classList.contains('completed')) {
+                // Mark as incomplete
+                item.classList.remove('completed');
+                checkbox.classList.remove('checked');
+                checkbox.innerHTML = '';
+                completedTasks = completedTasks.filter(id => id !== taskId);
+            } else {
+                // Mark as complete
+                item.classList.add('completed');
+                checkbox.classList.add('checked');
+                checkbox.innerHTML = '✓';
+                completedTasks.push(taskId);
+                
+                // Show celebration for high priority tasks
+                if (item.classList.contains('high-priority')) {
+                    showCelebration('🎉 Great job! You completed a high-priority task!');
+                }
+            }
+            
+            localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+            updateProgress();
+        }
+
+        // Update progress statistics
+        function updateProgress() {
+            const totalTasks = document.querySelectorAll('.checklist-item').length;
+            const completed = completedTasks.length;
+            const percentage = Math.round((completed / totalTasks) * 100);
+            
+            // Update stats
+            document.getElementById('completed-tasks').textContent = completed;
+            document.getElementById('total-tasks').textContent = totalTasks;
+            
+            // Update progress bar
+            document.getElementById('overall-progress').style.width = percentage + '%';
+            
+            // Update progress text
+            const progressText = document.getElementById('progress-text');
+            if (percentage === 0) {
+                progressText.textContent = '0% Complete - Ready to begin your automation journey!';
+            } else if (percentage < 25) {
+                progressText.textContent = `${percentage}% Complete - Great start! Keep building momentum.`;
+            } else if (percentage < 50) {
+                progressText.textContent = `${percentage}% Complete - You're making excellent progress!`;
+            } else if (percentage < 75) {
+                progressText.textContent = `${percentage}% Complete - Over halfway there! Amazing work.`;
+            } else if (percentage < 100) {
+                progressText.textContent = `${percentage}% Complete - Almost finished! You're so close.`;
+            } else {
+                progressText.textContent = '🎉 100% Complete - Congratulations! Your automation is complete!';
+                showCelebration('🚀 Incredible! You\'ve completed your entire automation journey!');
+            }
+            
+            // Update current phase
+            let currentPhase = 1;
+            if (percentage > 33) currentPhase = 2;
+            if (percentage > 66) currentPhase = 3;
+            if (percentage === 100) currentPhase = 4;
+            
+            document.getElementById('current-phase').textContent = currentPhase;
+        }
+
+        // Show celebration message
+        function showCelebration(message) {
+            // Create celebration popup
+            const celebration = document.createElement('div');
+            celebration.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #059669, #047857);
+                color: white;
+                padding: 2rem;
+                border-radius: 12px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                z-index: 1000;
+                text-align: center;
+                font-size: 1.2rem;
+                font-weight: 600;
+                animation: celebrationPop 0.5s ease-out;
+            `;
+            
+            celebration.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                <div>${message}</div>
+            `;
+            
+            // Add animation keyframes
+            if (!document.getElementById('celebration-styles')) {
+                const style = document.createElement('style');
+                style.id = 'celebration-styles';
+                style.textContent = `
+                    @keyframes celebrationPop {
+                        0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+                        50% { transform: translate(-50%, -50%) scale(1.1); }
+                        100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(celebration);
+            
+            setTimeout(() => {
+                celebration.style.animation = 'celebrationPop 0.3s ease-out reverse';
+                setTimeout(() => {
+                    document.body.removeChild(celebration);
+                }, 300);
+            }, 3000);
+        }
+
+        // Export checklist as text
+        function exportChecklist() {
+            let exportText = 'COMPUTER STORE AUTOMATION CHECKLIST\n';
+            exportText += '=====================================\n\n';
+            
+            const phases = document.querySelectorAll('.phase-section');
+            phases.forEach(phase => {
+                const title = phase.querySelector('.phase-title').textContent;
+                const badge = phase.querySelector('.phase-badge').textContent;
+                exportText += `${title} (${badge})\n`;
+                exportText += '-'.repeat(title.length + badge.length + 3) + '\n\n';
+                
+                const groups = phase.querySelectorAll('.checklist-group');
+                groups.forEach(group => {
+                    const groupTitle = group.querySelector('.group-title').textContent;
+                    exportText += `${groupTitle}\n\n`;
+                    
+                    const items = group.querySelectorAll('.checklist-item');
+                    items.forEach(item => {
+                        const isCompleted = item.classList.contains('completed');
+                        const itemTitle = item.querySelector('.item-title').textContent;
+                        const description = item.querySelector('.item-description').textContent;
+                        
+                        exportText += `${isCompleted ? '✓' : '☐'} ${itemTitle}\n`;
+                        exportText += `   ${description}\n\n`;
+                    });
+                    
+                    exportText += '\n';
+                });
+                
+                exportText += '\n';
+            });
+            
+            // Download as text file
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'computer-store-automation-checklist.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showCelebration('📄 Checklist exported successfully!');
+        }
+
+        // Reset progress
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                completedTasks = [];
+                localStorage.removeItem('completedTasks');
+                
+                document.querySelectorAll('.checklist-item').forEach(item => {
+                    item.classList.remove('completed');
+                    const checkbox = item.querySelector('.checkbox');
+                    checkbox.classList.remove('checked');
+                    checkbox.innerHTML = '';
+                });
+                
+                updateProgress();
+                showCelebration('🔄 Progress reset successfully!');
+            }
+        }
+
+        // Print checklist
+        function printChecklist() {
+            window.print();
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeChecklist);
+    </script>
+</body>
+</html>
